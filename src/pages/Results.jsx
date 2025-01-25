@@ -67,22 +67,35 @@ const Results = () => {
   }
 
   const collegeStats = collegeResults.map(college => {
+    const pointsMapping = {
+      1: 30,
+      2: 20,
+      3: 10
+    };
+
     const stats = college.results.reduce(
       (acc, result) => {
+        const basePoints = pointsMapping[result.position] || 0;
+        const points = result.category === "Stage" ? basePoints * 2 : basePoints;
+        acc.totalPoints += points;
+
         if (result.position === 1) acc.first++;
         if (result.position === 2) acc.second++;
         if (result.position === 3) acc.third++;
+
         return acc;
       },
-      { first: 0, second: 0, third: 0 }
+      { first: 0, second: 0, third: 0, totalPoints: 0 }
     );
-    
+
     return {
-      ...college,
-      stats,
-      totalPrizes: stats.first + stats.second + stats.third
+      name: college.collegeName,
+      ...stats
     };
-  }).sort((a, b) => b.totalPrizes - a.totalPrizes);
+  });
+
+  // Sort colleges by total points instead of total prizes
+  collegeStats.sort((a, b) => b.totalPoints - a.totalPoints);
 
   const topColleges = collegeStats.slice(0, 3);
 
@@ -114,7 +127,7 @@ const Results = () => {
           <div className="space-y-6">
             {topColleges.map((college, index) => (
               <motion.div
-                key={college.collegeName}
+                key={college.name}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -122,21 +135,21 @@ const Results = () => {
               >
                 <div className="flex flex-col items-center space-y-4">
                   <div className="text-center">
-                    <h2 className="text-4xl font-bold text-white">{college.collegeName}</h2>
-                    <p className="text-gray-300 mt-2 text-xl">Total Prizes: {college.totalPrizes}</p>
+                    <h2 className="text-4xl font-bold text-white">{college.name}</h2>
+                    <p className="text-gray-300 mt-2 text-xl">Total Points: {college.totalPoints}</p>
                   </div>
                   <div className="flex items-center space-x-6">
                     <div className="flex items-center space-x-2">
                       <span className="w-4 h-4 rounded-full bg-yellow-400"></span>
-                      <span className="text-2xl font-bold text-gray-300">{college.stats.first}</span>
+                      <span className="text-2xl font-bold text-gray-300">{college.first}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="w-4 h-4 rounded-full bg-gray-300"></span>
-                      <span className="text-2xl font-bold text-gray-300">{college.stats.second}</span>
+                      <span className="text-2xl font-bold text-gray-300">{college.second}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="w-4 h-4 rounded-full bg-orange-400"></span>
-                      <span className="text-2xl font-bold text-gray-300">{college.stats.third}</span>
+                      <span className="text-2xl font-bold text-gray-300">{college.third}</span>
                     </div>
                   </div>
                 </div>
@@ -165,7 +178,7 @@ const Results = () => {
             >
               {collegeStats.map((college, index) => (
                 <motion.div
-                  key={college.collegeName}
+                  key={college.name}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -173,19 +186,22 @@ const Results = () => {
                   className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 shadow-lg shadow-black/5"
                 >
                   <div className="flex flex-col items-center space-y-3">
-                    <h2 className="text-2xl font-bold text-white">{college.collegeName}</h2>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold text-white">{college.name}</h2>
+                      <p className="text-gray-300 mt-2 text-xl">Total Points: {college.totalPoints}</p>
+                    </div>
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-2">
                         <span className="w-3 h-3 rounded-full bg-yellow-400"></span>
-                        <span className="text-xl font-bold text-gray-300">{college.stats.first}</span>
+                        <span className="text-xl font-bold text-gray-300">{college.first}</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <span className="w-3 h-3 rounded-full bg-gray-300"></span>
-                        <span className="text-xl font-bold text-gray-300">{college.stats.second}</span>
+                        <span className="text-xl font-bold text-gray-300">{college.second}</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <span className="w-3 h-3 rounded-full bg-orange-400"></span>
-                        <span className="text-xl font-bold text-gray-300">{college.stats.third}</span>
+                        <span className="text-xl font-bold text-gray-300">{college.third}</span>
                       </div>
                     </div>
                   </div>
